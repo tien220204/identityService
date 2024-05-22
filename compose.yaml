@@ -13,7 +13,29 @@ services:
       context: .
     ports:
       - 8080:8080
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/identity_service
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=phamtien2004
+    depends_on:
+      - mysql
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_container
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=identity_service
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=phamtien2004
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
 
+
+
+  volumes:
+    mysql_data:
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to
 # start the database before your application. The `db-data` volume persists the
