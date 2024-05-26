@@ -22,17 +22,20 @@ public class PermissionService {
     PermissionMapper permissionMapper;
 
 
-    PermissionResponse create(PermissionRequest request){
+    public PermissionResponse create(PermissionRequest request){
         Permission permission = permissionMapper.toPermission(request);
         permission = permissionRepository.save(permission);
         return  permissionMapper.toPermissionReponse(permission);
     }
-    List<PermissionResponse> getAll(){
+    public List<PermissionResponse> getAll(){
         //truy ra tat ca permission kieu list<entity>
         var permissions = permissionRepository.findAll();
         //chuyen tung phan tu trong list sang response bang stream.map => bo vao list
         return permissions.stream().map(permissionMapper::toPermissionReponse).toList();
 
+    }
+    public void delete(String permission){
+        permissionRepository.deleteById(permission);
     }
 
 }

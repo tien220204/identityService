@@ -65,8 +65,8 @@ public class UserService {
     //xac thuc truoc khi thuc hien
     @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getUsers() {
-        var users =  userRepository.findAll();
-        return users.stream().map(userMapper::toUserReponse).toList();
+        return  userRepository.findAll().stream().map(userMapper::toUserReponse).toList();
+
     }
     //thuc hien -> xac thuc va dua ra du lieu neu xac thuc dung
     //tra ve du lieu neu username nguoi truy xuat(token) = username dang duoc tim kiem
