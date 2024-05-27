@@ -10,6 +10,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import com.tien.identity.service.dto.request.UserCreationRequest;
@@ -63,6 +64,14 @@ public class UserController {
     ApiResponse<UserResponse> getMyInfo(){
         return ApiResponse.<UserResponse>builder()
                 .result(userService.getMyInfo())
+                .build();
+    }
+
+    //phan trang
+    @GetMapping("/findByPagination/{page}/{size}")
+    public ApiResponse<Page<UserResponse>> getEntities(@PathVariable int page, @PathVariable int size){
+        return ApiResponse.<Page<UserResponse>>builder()
+                .result(userService.getUsersWithPagination(page, size))
                 .build();
     }
 }
