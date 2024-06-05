@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -25,6 +26,9 @@ public class RoleService {
 
     public RoleResponse create(RoleRequest request){
         var role = roleMapper.toRole(request);
+        var permissions = permissionRepository.findAllById(request.getPermissions());
+
+        role.setPermissions(new HashSet<>(permissions));
         roleResponsitory.save(role);
         return  roleMapper.toRoleResponse(role);
     }

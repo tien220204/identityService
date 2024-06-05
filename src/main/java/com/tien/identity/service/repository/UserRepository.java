@@ -9,7 +9,10 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
+    //Derived Count Query,.....("by")
     boolean existsByUsername(String username);
     Optional<User> findByUsername(String username);
+
+    //save = persist(add) or merge(update)
 
 }

@@ -76,7 +76,7 @@ public class UserService {
     //return object o day la User va authentication.name là subject trong payload
     @PostAuthorize("returnObject.username  == authentication.name")
     public UserResponse getUser(String id) {
-        return userMapper.toUserReponse(userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found")));
+        return userMapper.toUserReponse(userRepository.findById(id).orElseThrow(() -> new RuntimeException("No right accession")));
     }
 
     public void deleteUser(String id) {
