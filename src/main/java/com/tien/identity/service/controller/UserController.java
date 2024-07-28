@@ -32,8 +32,8 @@ public class UserController {
     }
 
     @GetMapping("/findAll")
-    ApiResponse<List<User>> selectUser() {
-        return ApiResponse.<List<User>>builder()
+    ApiResponse<List<UserResponse>> selectUser() {
+        return ApiResponse.<List<UserResponse>>builder()
                 .result(userService.getUsers())
                 .build();
     }
@@ -59,6 +59,7 @@ public class UserController {
                 .result("xoa thanh cong")
                 .build();
     }
+
     @GetMapping("/getMyInfo")
     ApiResponse<UserResponse> getMyInfo(){
         return ApiResponse.<UserResponse>builder()

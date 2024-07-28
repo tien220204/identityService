@@ -32,6 +32,7 @@ public class SecurityConfig {
     private String signerKey ;
     private final String[] PUBLIC_ENDPOINTS = {
             "/users/createUser",
+            "/users/getMyInfo",
             "/auth/**"
     } ;
     @Bean
@@ -49,6 +50,7 @@ public class SecurityConfig {
         httpSecurity.oauth2ResourceServer(
             oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())
                     .jwtAuthenticationConverter(jwtAujwtAuthenticationConverter()))//convert prefix claim
+                    .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
         );
 //        spring security tu dong bat cau hinh csrf(bao ve endpoint khoi attack cross high)->forbiden(code 403)->díable
         httpSecurity.csrf(AbstractHttpConfigurer::disable);

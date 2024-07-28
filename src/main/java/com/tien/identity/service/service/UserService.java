@@ -49,11 +49,13 @@ public class UserService {
     //lay info cua tai khoan dang dang nhap trong securityContextHolder
     public  UserResponse getMyInfo(){
         var context = SecurityContextHolder.getContext();
+        var role = context.getAuthentication();
+        System.out.println(role);
         var name = context.getAuthentication().getName();
         User user = userRepository.findByUsername(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         return userMapper.toUserReponse(user);
     }
-
+    @PostAuthorize("returnObject.username == authentication.name")
     public UserResponse updateRequest(String id, UserUpdateRequest request) {
         var user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
@@ -64,15 +66,16 @@ public class UserService {
     }
     //xac thuc truoc khi thuc hien
     @PreAuthorize("hasRole('ADMIN')")
-    public List<User> getUsers() {
-        return userRepository.findAll();
+    public List<UserResponse> getUsers() {
+        return userRepository.findAll().stream().map(userMapper::toUserReponse).toList();
     }
     //thuc hien -> xac thuc va dua ra du lieu neu xac thuc dung
     //tra ve du lieu neu username nguoi truy xuat(token) = username dang duoc tim kiem
     //return object o day la User va authentication.name là subject trong payload
     @PostAuthorize("returnObject.username  == authentication.name")
     public UserResponse getUser(String id) {
-        return userMapper.toUserReponse(userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found")));
+        return userMapper.toUserReponse(
+                userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
     }
 
     public void deleteUser(String id) {
