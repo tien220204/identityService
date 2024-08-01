@@ -96,8 +96,8 @@ public class AuthenticationService {
     private String scopeBuilder(User user){
         //cach nhau bang dau cahc
         StringJoiner stringJoiner = new StringJoiner(" ");
-        if(!CollectionUtils.isEmpty(user.getRoles()))
-            user.getRoles().forEach(stringJoiner::add);
+//        if(!CollectionUtils.isEmpty(user.getRoles()))
+//            user.getRoles().forEach(stringJoiner::add);
         return stringJoiner.toString();
     }
 }
