@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -20,10 +21,14 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
 public class RoleService {
     RoleRepository roleRepository;
+    PermissionRepository permissionRepository;
     RoleMapper mapper;
 
     public RoleResponse create (RoleRequest request){
         var role = mapper.toRole(request);
+
+        var permissions = permissionRepository.findAllById(request.getPermissions());
+        role.setPermissions(new HashSet<>(permissions));
         return mapper.toRoleReponse(roleRepository.save(role)) ;
     }
 

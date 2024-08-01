@@ -35,6 +35,7 @@ public class SecurityConfig {
             "/users/getMyInfo",
             "/auth/**",
 
+
     } ;
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {

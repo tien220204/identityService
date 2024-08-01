@@ -8,6 +8,7 @@ import com.tien.identity.service.repository.PermissionRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
