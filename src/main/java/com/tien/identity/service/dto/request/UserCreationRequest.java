@@ -1,7 +1,10 @@
 package com.tien.identity.service.dto.request;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 
+import com.tien.identity.service.entity.Role;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -13,9 +16,11 @@ import lombok.experimental.FieldDefaults;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserCreationRequest {
+
     @Size(min = 8, max = 15, message = "USERNAME_INVALID")
      String username;
 
+    @NotNull
     @Size(min = 8, max = 15, message = "PASSWORD_INVALID")
      String password;
 

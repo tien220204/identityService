@@ -4,8 +4,10 @@ import java.util.HashSet;
 import java.util.List;
 
 import com.tien.identity.service.dto.response.UserResponse;
+import com.tien.identity.service.entity.Role;
 import com.tien.identity.service.enums.Roles;
 import com.tien.identity.service.mapper.UserMapper;
+import com.tien.identity.service.repository.RoleRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -32,6 +34,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class UserService {
      UserRepository userRepository;
      UserMapper userMapper;
+     RoleRepository roleRepository;
      PasswordEncoder passwordEncoder;
 
 
@@ -40,9 +43,6 @@ public class UserService {
         var user = userMapper.toUser(request);
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        HashSet<String> roles = new HashSet<>();
-//        roles.add(Roles.USER.name());
-//        user.setRoles(roles);
         return userMapper.toUserReponse(userRepository.save(user));
     }
 
@@ -57,9 +57,13 @@ public class UserService {
     }
     @PostAuthorize("returnObject.username == authentication.name")
     public UserResponse updateRequest(String id, UserUpdateRequest request) {
-        var user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        var user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
         request.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        var roles = roleRepository.findAllById(request.getRoles());
+        user.setRoles(new HashSet<>(roles));
+
         userMapper.updateUser(user,request);
 
         return userMapper.toUserReponse(userRepository.save(user));

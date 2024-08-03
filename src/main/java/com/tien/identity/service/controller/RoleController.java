@@ -11,6 +11,7 @@ import com.tien.identity.service.service.RoleService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,8 +23,11 @@ import java.util.List;
 public class RoleController {
     RoleService roleService;
 
+    @PreAuthorize("hasAuthority('CREATE_DATA')")
+//    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("create")
     ApiResponse<RoleResponse> create(@RequestBody RoleRequest request){
+        System.out.println(request);
         return ApiResponse.<RoleResponse>builder()
                 .result(roleService.create(request))
                 .build();

@@ -1,10 +1,11 @@
 package com.tien.identity.service.dto.request;
 
+import com.tien.identity.service.entity.Role;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
-
+import java.util.List;
 
 
 @Data
@@ -19,6 +20,6 @@ public class UserUpdateRequest {
      String firstname;
      String lastname;
      LocalDate dob;
-
+     List<String> roles;
 
 }

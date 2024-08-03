@@ -12,7 +12,10 @@ import org.mapstruct.MappingTarget;
 public interface UserMapper {
     User toUser(UserCreationRequest request);
     //resquest se anh xa vao target la user ma khong can tao ra 1 doi tuong ban sao moi => k ton bo nho
+
+    @Mapping(target = "roles",ignore = true)
     void updateUser(@MappingTarget User user, UserUpdateRequest request);
 //    @Mapping(target = "firstname", expression = "java(UserReponse.getFirstName()+\" \"+UserReponse.getLastName())")
+
     UserResponse toUserReponse(User user);
 }
