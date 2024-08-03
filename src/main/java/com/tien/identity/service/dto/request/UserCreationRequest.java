@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.HashSet;
 
 import com.tien.identity.service.entity.Role;
+import com.tien.identity.service.validator.DobConstraint;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -26,6 +27,8 @@ public class UserCreationRequest {
 
      String firstname;
      String lastname;
+
+     @DobConstraint(min = 18, message = "DOB_INVALID")
      LocalDate dob;
 
 
