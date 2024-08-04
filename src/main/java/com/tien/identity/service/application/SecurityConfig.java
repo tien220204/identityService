@@ -1,6 +1,7 @@
 package com.tien.identity.service.application;
 
 import com.tien.identity.service.enums.Roles;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,8 +29,10 @@ import javax.crypto.spec.SecretKeySpec;
 //pho bien hon so voi endpoint security
 @EnableMethodSecurity
 public class SecurityConfig {
-    @Value("${jwt.signerKey}")
-    private String signerKey ;
+
+    @Autowired
+    private CustomJwtDecoder customJwtDecoder;
+
     private final String[] PUBLIC_ENDPOINTS = {
             "/users/createUser",
             "/users/getMyInfo",
@@ -50,7 +53,7 @@ public class SecurityConfig {
                                 .anyRequest().authenticated());
 //        cau hinh de nhung endpoint khac co the truy cap bang token
         httpSecurity.oauth2ResourceServer(
-            oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())
+            oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(customJwtDecoder)
                     .jwtAuthenticationConverter(jwtAujwtAuthenticationConverter()))//convert prefix claim
                     .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
         );
@@ -63,15 +66,9 @@ public class SecurityConfig {
 
         return httpSecurity.build();
     }
-    //implement cho interface JWTDecoder
-    @Bean
-     JwtDecoder jwtDecoder() {
-         SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(),"HS512");
-         return NimbusJwtDecoder
-                 .withSecretKey(secretKeySpec)
-                 .macAlgorithm(MacAlgorithm.HS512)
-                 .build();
-    }
+
+
+
     //doi ten cho claim tu scope Prefix SCOPE sang prefix ROLE
     @Bean
     JwtAuthenticationConverter jwtAujwtAuthenticationConverter(){

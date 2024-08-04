@@ -3,7 +3,8 @@ package com.tien.identity.service.controller;
 import com.nimbusds.jose.JOSEException;
 import com.tien.identity.service.dto.request.ApiResponse;
 import com.tien.identity.service.dto.request.AuthenticationRequest;
-import com.tien.identity.service.dto.request.IntropectRequest;
+import com.tien.identity.service.dto.request.IntrospectRequest;
+import com.tien.identity.service.dto.request.LogoutRequest;
 import com.tien.identity.service.dto.response.AuthenticationResponse;
 import com.tien.identity.service.dto.response.IntrospectResponse;
 import com.tien.identity.service.service.AuthenticationService;
@@ -32,10 +33,17 @@ public class AuthenticationController {
                 .build();
     }
     @PostMapping("/introspect")
-    ApiResponse<IntrospectResponse> intropect(@RequestBody IntropectRequest request) throws ParseException, JOSEException {
-        var result =  authenticationService.intropect(request);
+    ApiResponse<IntrospectResponse> intropect(@RequestBody IntrospectRequest request) throws ParseException, JOSEException {
+        var result =  authenticationService.introspect(request);
         return ApiResponse.<IntrospectResponse>builder()
                 .result(result)
+                .build();
+    }
+    @PostMapping("/logout")
+    ApiResponse<Void> logOut(@RequestBody LogoutRequest request) throws ParseException, JOSEException {
+        authenticationService.logout(request);
+        return ApiResponse.<Void>builder()
+//                .result(result)
                 .build();
     }
 
