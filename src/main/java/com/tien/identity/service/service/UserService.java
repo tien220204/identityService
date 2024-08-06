@@ -41,8 +41,14 @@ public class UserService {
     public UserResponse createRequest(UserCreationRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) throw new AppException(ErrorCode.USER_EXISTED);
         var user = userMapper.toUser(request);
+
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+//        HashSet<Role> roles = new HashSet<>();
+//        roleRepository.findById(PredefindedRole.USER_ROLE).ifPresent(roles::add);
+//        user.setRoles(roles);
+
         return userMapper.toUserReponse(userRepository.save(user));
     }
 

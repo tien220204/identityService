@@ -8,6 +8,7 @@ import com.nimbusds.jwt.SignedJWT;
 import com.tien.identity.service.dto.request.AuthenticationRequest;
 import com.tien.identity.service.dto.request.IntrospectRequest;
 import com.tien.identity.service.dto.request.LogoutRequest;
+import com.tien.identity.service.dto.request.RefreshRequest;
 import com.tien.identity.service.dto.response.AuthenticationResponse;
 import com.tien.identity.service.dto.response.IntrospectResponse;
 import com.tien.identity.service.entity.InvalidatedToken;
@@ -45,6 +46,15 @@ public class AuthenticationService {
     @Value("${jwt.signerKey}")
     protected  String SIGNER_KEY ;
 
+
+    @NonFinal
+    @Value("{jwt.valid-duration}")
+    protected  int VALID_DURATION;
+
+    @NonFinal
+    @Value("{jwt.refreshable-duration}")
+    protected int REFRESHABLE_DURATION;
+
     public AuthenticationResponse authenticate(AuthenticationRequest request){
         var user = userRepository.findByUsername(request.getUsername()).orElseThrow(()-> new AppException(ErrorCode.USER_NOT_EXISTED));
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(10);
@@ -59,9 +69,41 @@ public class AuthenticationService {
                 .build();
     }
 
+    public AuthenticationResponse refreshToken(RefreshRequest request) throws ParseException, JOSEException {
+
+        var signedToken = verifyToken(request.getToken(), true);
+        System.out.println(signedToken);
+
+        var jit = signedToken.getJWTClaimsSet().getJWTID();
+        var expiryTime = signedToken.getJWTClaimsSet().getExpirationTime();
+
+        //invalid token cu khi sap het han
+        InvalidatedToken invalidatedToken = InvalidatedToken.builder()
+                .id(jit)
+                .expriryDate(expiryTime)
+                .build();
+        invalidatedTokenRepository.save(invalidatedToken);
+
+        //generate token moi bang refresh token
+        var username = signedToken.getJWTClaimsSet().getSubject();
+        System.out.println("username"+username);
+        var user = userRepository.findByUsername(username).orElseThrow(
+                () -> new AppException(ErrorCode.UNAUTHENTICATED)
+        );
+        System.out.println("user"+user);
+
+        var token = generateToken(user);
+
+        return AuthenticationResponse.builder()
+                .token(token)
+                .authenticated(true)
+                .build();
+
+    }
+
+
     public String generateToken(User user){
         //tao object(header,payload)=>sign
-
 
         var jwtHeader = new JWSHeader(JWSAlgorithm.HS512);
 
@@ -70,7 +112,7 @@ public class AuthenticationService {
                 .issuer("tien.com") //noi cap token
                 .issueTime(new Date()) //thoi diem phat hanh token
                 .expirationTime(new Date(
-                        Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
+                        Instant.now().plus(VALID_DURATION, ChronoUnit.SECONDS).toEpochMilli()
                 )) //thoi diem toke het han(mili giay)
                 .jwtID(UUID.randomUUID().toString())
                 //them claim ten scope de xac dinh role user, cach nhau bang dau cach
@@ -96,7 +138,7 @@ public class AuthenticationService {
 
         //kiem tra neu invalid => false
         try{
-            verifyToken(token);
+            verifyToken(token, false);
         }
         catch (AppException e){
             isValid = false;
@@ -123,29 +165,39 @@ public class AuthenticationService {
     }
 
     public void logout (LogoutRequest request) throws ParseException, JOSEException {
-        var signedToken = verifyToken(request.getToken());
 
-        var jit = signedToken.getJWTClaimsSet().getJWTID();
+        try {
+            var signedToken = verifyToken(request.getToken(), false);
 
-        var expirationTime = signedToken.getJWTClaimsSet().getExpirationTime();
+            var jit = signedToken.getJWTClaimsSet().getJWTID();
 
-        var invalidatedToken = InvalidatedToken.builder()
-                .id(jit)
-                .expriryDate(expirationTime)
-                .build();
+            var expirationTime = signedToken.getJWTClaimsSet().getExpirationTime();
 
-        invalidatedTokenRepository.save(invalidatedTokenRepository);
+            var invalidatedToken = InvalidatedToken.builder()
+                    .id(jit)
+                    .expriryDate(expirationTime)
+                    .build();
+
+            invalidatedTokenRepository.save(invalidatedToken);
+        }catch(AppException exception) {
+            System.out.println("token expired");
+        }
+
     }
 
 
     //doc token tu string token
-    private SignedJWT verifyToken(String token) throws ParseException, JOSEException {
+    private SignedJWT verifyToken(String token, boolean isRefresh) throws ParseException, JOSEException {
 
         JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
 
         SignedJWT signedJWT = SignedJWT.parse(token);
 
-        var expirationTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+        var expirationTime =(isRefresh)
+                //neu refresh=> + thoi gian vao token hien tai
+                ? new Date( signedJWT.getJWTClaimsSet().getIssueTime().toInstant().plus(REFRESHABLE_DURATION, ChronoUnit.SECONDS).toEpochMilli())
+                //k refresh => lay ra thoi gian hien tai
+                : signedJWT.getJWTClaimsSet().getExpirationTime();
 
         var verified = signedJWT.verify(verifier);
 
