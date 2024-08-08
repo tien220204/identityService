@@ -45,20 +45,21 @@ public class UserControllerTest {
 
     @BeforeEach
     void initData(){
-        dob = LocalDate.of(2020,05,05);
+        dob = LocalDate.of(2000,05,05);
 
         request = UserCreationRequest.builder()
-                .username("abc")
-                .firstname("abc")
-                .lastname("test")
+                .username("Johnabcdnnnn")
+                .firstname("Johnabcdnnnn")
+                .lastname("Doe")
+                .password("12345678")
                 .dob(dob)
                 .build();
 
         userResponse = UserResponse.builder()
-                .id("abc")
-                .username("abc")
-                .firstname("abc")
-                .lastname("test")
+                .id("cf0600f538b3")
+                .username("Johnabcdnnnn")
+                .firstname("Johnabcdnnnn")
+                .lastname("Doe")
                 .dob(dob)
                 .build();
 
@@ -81,7 +82,7 @@ public class UserControllerTest {
 
         //WHEN, THEN
         mockMvc.perform(MockMvcRequestBuilders
-                .post("/users/create")
+                .post("/users/createUser")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(content))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -105,12 +106,12 @@ public class UserControllerTest {
 
         //WHEN, THEN
         mockMvc.perform(MockMvcRequestBuilders
-                        .post("/users/create")
+                        .post("/users/createUser")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(content))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("code").value(1003))
-                .andExpect(MockMvcResultMatchers.jsonPath("message").value("Username requires more than 4 characters"));
+                .andExpect(MockMvcResultMatchers.jsonPath("message").value("Username requires more than 8 characters"));
 
 
 

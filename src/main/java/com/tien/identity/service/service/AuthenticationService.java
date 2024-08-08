@@ -48,12 +48,13 @@ public class AuthenticationService {
 
 
     @NonFinal
-    @Value("{jwt.valid-duration}")
-    protected  int VALID_DURATION;
+    @Value("${jwt.valid-duration}")
+    protected int VALID_DURATION;
 
     @NonFinal
-    @Value("{jwt.refreshable-duration}")
+    @Value("${jwt.refreshable-duration}")
     protected int REFRESHABLE_DURATION;
+
 
     public AuthenticationResponse authenticate(AuthenticationRequest request){
         var user = userRepository.findByUsername(request.getUsername()).orElseThrow(()-> new AppException(ErrorCode.USER_NOT_EXISTED));

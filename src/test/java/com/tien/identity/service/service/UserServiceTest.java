@@ -88,7 +88,7 @@ public class UserServiceTest {
         var exception = assertThrows(AppException.class, () -> userService.createRequest(request));
 
         // THEN
-        Assertions.assertThat(exception.getErrorCode().getCode()).isEqualTo(1002);
+        Assertions.assertThat(exception.getErrorCode().getCode()).isEqualTo(1001);
     }
 
 }
