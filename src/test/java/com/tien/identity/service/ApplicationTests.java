@@ -5,11 +5,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.jackson.JacksonProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.test.context.TestPropertySource;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 @SpringBootTest
+@TestPropertySource("/test.properties")
 class ApplicationTests {
 
     @Test
