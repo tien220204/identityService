@@ -167,7 +167,7 @@ public class AuthenticationService {
     public void logout (LogoutRequest request) throws ParseException, JOSEException {
 
         try {
-            var signedToken = verifyToken(request.getToken(), false);
+            var signedToken = verifyToken(request.getToken(), true);
 
             var jit = signedToken.getJWTClaimsSet().getJWTID();
 

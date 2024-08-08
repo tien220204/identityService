@@ -11,11 +11,13 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserResponse {
     String id;
     String username;
     String firstname;
+    String lastname;
     LocalDate dob;
     Set<RoleResponse> roles;
 }
