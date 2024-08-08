@@ -43,7 +43,12 @@
 			<artifactId>mysql-connector-j</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-
+<!--		authen test-->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
 
 
 		<dependency>
@@ -155,7 +160,8 @@
 				</executions>
 				<configuration>
 					<excludes>
-
+<!--						loai bo nhung class khong test => k lam giam coverage. Ex: dto, entity, mapper, configuration-->
+						<exclude>com.tien.identity.service.dto/**</exclude>
 					</excludes>
 				</configuration>
 			</plugin>
