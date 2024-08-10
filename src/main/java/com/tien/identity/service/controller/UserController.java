@@ -2,27 +2,26 @@ package com.tien.identity.service.controller;
 
 import java.util.List;
 
-import com.tien.identity.service.dto.request.ApiResponse;
-import com.tien.identity.service.dto.response.UserResponse;
 import jakarta.validation.Valid;
+
+import org.springframework.web.bind.annotation.*;
+
+import com.tien.identity.service.dto.request.ApiResponse;
+import com.tien.identity.service.dto.request.UserCreationRequest;
+import com.tien.identity.service.dto.request.UserUpdateRequest;
+import com.tien.identity.service.dto.response.UserResponse;
+import com.tien.identity.service.service.UserService;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import com.tien.identity.service.dto.request.UserCreationRequest;
-import com.tien.identity.service.dto.request.UserUpdateRequest;
-import com.tien.identity.service.entity.User;
-import com.tien.identity.service.service.UserService;
 
 @RequestMapping("/users")
 @RestController
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserController {
-     UserService userService;
+    UserService userService;
 
     @PostMapping("/createUser")
     ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreationRequest request) {
@@ -55,13 +54,11 @@ public class UserController {
     @DeleteMapping("/deleteUser/{id}")
     ApiResponse<String> deleteUser(@PathVariable String id) {
         userService.deleteUser(id);
-        return ApiResponse.<String>builder()
-                .result("xoa thanh cong")
-                .build();
+        return ApiResponse.<String>builder().result("xoa thanh cong").build();
     }
 
     @GetMapping("/getMyInfo")
-    ApiResponse<UserResponse> getMyInfo(){
+    ApiResponse<UserResponse> getMyInfo() {
         return ApiResponse.<UserResponse>builder()
                 .result(userService.getMyInfo())
                 .build();

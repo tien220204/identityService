@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Set;
 
 import jakarta.persistence.*;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -19,17 +20,14 @@ public class User {
     @Id
     // tao ra cac id ngau nhien khong trung lap(phuc tap hon 1, 2, 3,...)
     @GeneratedValue(strategy = GenerationType.UUID)
-     String id;
+    String id;
 
-     String username;
-     String password;
-     String firstname;
-     String lastname;
-     LocalDate dob;
-     @ManyToMany
-     Set<Role> roles;
+    String username;
+    String password;
+    String firstname;
+    String lastname;
+    LocalDate dob;
 
-
-
-    
+    @ManyToMany
+    Set<Role> roles;
 }

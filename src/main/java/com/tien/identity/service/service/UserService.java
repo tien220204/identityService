@@ -3,40 +3,35 @@ package com.tien.identity.service.service;
 import java.util.HashSet;
 import java.util.List;
 
-import com.tien.identity.service.dto.response.UserResponse;
-import com.tien.identity.service.entity.Role;
-import com.tien.identity.service.enums.Roles;
-import com.tien.identity.service.mapper.UserMapper;
-import com.tien.identity.service.repository.RoleRepository;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.tien.identity.service.dto.request.UserCreationRequest;
 import com.tien.identity.service.dto.request.UserUpdateRequest;
+import com.tien.identity.service.dto.response.UserResponse;
 import com.tien.identity.service.entity.User;
 import com.tien.identity.service.exception.AppException;
 import com.tien.identity.service.exception.ErrorCode;
+import com.tien.identity.service.mapper.UserMapper;
+import com.tien.identity.service.repository.RoleRepository;
 import com.tien.identity.service.repository.UserRepository;
-import org.springframework.web.bind.annotation.PostMapping;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserService {
-     UserRepository userRepository;
-     UserMapper userMapper;
-     RoleRepository roleRepository;
-     PasswordEncoder passwordEncoder;
-
+    UserRepository userRepository;
+    UserMapper userMapper;
+    RoleRepository roleRepository;
+    PasswordEncoder passwordEncoder;
 
     public UserResponse createRequest(UserCreationRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) throw new AppException(ErrorCode.USER_EXISTED);
@@ -45,15 +40,15 @@ public class UserService {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-//        HashSet<Role> roles = new HashSet<>();
-//        roleRepository.findById(PredefindedRole.USER_ROLE).ifPresent(roles::add);
-//        user.setRoles(roles);
+        //        HashSet<Role> roles = new HashSet<>();
+        //        roleRepository.findById(PredefindedRole.USER_ROLE).ifPresent(roles::add);
+        //        user.setRoles(roles);
 
         return userMapper.toUserReponse(userRepository.save(user));
     }
 
-    //lay info cua tai khoan dang dang nhap trong securityContextHolder
-    public  UserResponse getMyInfo(){
+    // lay info cua tai khoan dang dang nhap trong securityContextHolder
+    public UserResponse getMyInfo() {
         var context = SecurityContextHolder.getContext();
         var role = context.getAuthentication();
         System.out.println(role);
@@ -61,6 +56,7 @@ public class UserService {
         User user = userRepository.findByUsername(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         return userMapper.toUserReponse(user);
     }
+
     @PostAuthorize("returnObject.username == authentication.name")
     public UserResponse updateRequest(String id, UserUpdateRequest request) {
         var user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
@@ -70,18 +66,18 @@ public class UserService {
         var roles = roleRepository.findAllById(request.getRoles());
         user.setRoles(new HashSet<>(roles));
 
-        userMapper.updateUser(user,request);
+        userMapper.updateUser(user, request);
 
         return userMapper.toUserReponse(userRepository.save(user));
     }
-    //xac thuc truoc khi thuc hien
+    // xac thuc truoc khi thuc hien
     @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getUsers() {
         return userRepository.findAll().stream().map(userMapper::toUserReponse).toList();
     }
-    //thuc hien -> xac thuc va dua ra du lieu neu xac thuc dung
-    //tra ve du lieu neu username nguoi truy xuat(token) = username dang duoc tim kiem
-    //return object o day la User va authentication.name là subject trong payload
+    // thuc hien -> xac thuc va dua ra du lieu neu xac thuc dung
+    // tra ve du lieu neu username nguoi truy xuat(token) = username dang duoc tim kiem
+    // return object o day la User va authentication.name là subject trong payload
     @PostAuthorize("returnObject.username  == authentication.name")
     public UserResponse getUser(String id) {
         return userMapper.toUserReponse(

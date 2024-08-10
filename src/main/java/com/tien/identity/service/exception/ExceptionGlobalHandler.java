@@ -1,6 +1,10 @@
 package com.tien.identity.service.exception;
 
+import java.util.Map;
+import java.util.Objects;
+
 import jakarta.validation.ConstraintViolation;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
@@ -9,9 +13,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.tien.identity.service.dto.request.ApiResponse;
-
-import java.util.Map;
-import java.util.Objects;
 
 @ControllerAdvice
 public class ExceptionGlobalHandler {
@@ -26,7 +27,7 @@ public class ExceptionGlobalHandler {
         return ResponseEntity.badRequest().body(apiResponse);
     }
 
-    //xu ly exception bang message cua anootation
+    // xu ly exception bang message cua anootation
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     ResponseEntity<ApiResponse> handlingMethodArgumentNotValidException(
             MethodArgumentNotValidException methodArgumentNotValidException) {
@@ -36,10 +37,13 @@ public class ExceptionGlobalHandler {
         try {
             errorCode = ErrorCode.valueOf(enumKey);
 
-            var constraintViolation = methodArgumentNotValidException.getBindingResult().getAllErrors().getFirst()
+            var constraintViolation = methodArgumentNotValidException
+                    .getBindingResult()
+                    .getAllErrors()
+                    .getFirst()
                     .unwrap(ConstraintViolation.class);
 
-            //lay tham so dieu kien annotation
+            // lay tham so dieu kien annotation
             attributes = constraintViolation.getConstraintDescriptor().getAttributes();
         } catch (IllegalArgumentException e) {
 
@@ -47,36 +51,34 @@ public class ExceptionGlobalHandler {
 
         var apiResponse = new ApiResponse();
         apiResponse.setCode(errorCode.getCode());
-        apiResponse.setMessage(Objects.nonNull(attributes) ? MapAttributes(errorCode.getMessage(), attributes) : errorCode.getMessage());
-        return ResponseEntity
-                .status(errorCode.getStatusCode())
-                .body(apiResponse);
+        apiResponse.setMessage(
+                Objects.nonNull(attributes)
+                        ? MapAttributes(errorCode.getMessage(), attributes)
+                        : errorCode.getMessage());
+        return ResponseEntity.status(errorCode.getStatusCode()).body(apiResponse);
     }
-    //*note: su dung AccessDeniedException cua spring security
+    // *note: su dung AccessDeniedException cua spring security
     @ExceptionHandler(value = AccessDeniedException.class)
-    ResponseEntity<ApiResponse> handlingAccessDeniedException(AccessDeniedException accessDeniedException){
+    ResponseEntity<ApiResponse> handlingAccessDeniedException(AccessDeniedException accessDeniedException) {
         ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
         System.out.println("author");
-        return ResponseEntity.status(errorCode.getStatusCode()).body(
-                ApiResponse.builder()
+        return ResponseEntity.status(errorCode.getStatusCode())
+                .body(ApiResponse.builder()
                         .code(errorCode.getCode())
                         .message(errorCode.getMessage())
-                        .build()
-        );
+                        .build());
     }
 
     @ExceptionHandler(value = AuthenticationException.class)
-    ResponseEntity<ApiResponse> handlingAuthenticationdException(AuthenticationException accessDeniedException){
+    ResponseEntity<ApiResponse> handlingAuthenticationdException(AuthenticationException accessDeniedException) {
         System.out.println("authen");
         ErrorCode errorCode = ErrorCode.UNAUTHENTICATED;
 
-
-        return ResponseEntity.status(errorCode.getStatusCode()).body(
-                ApiResponse.builder()
+        return ResponseEntity.status(errorCode.getStatusCode())
+                .body(ApiResponse.builder()
                         .code(errorCode.getCode())
                         .message(errorCode.getMessage())
-                        .build()
-        );
+                        .build());
     }
 
     @ExceptionHandler(value = AppException.class)
@@ -85,14 +87,11 @@ public class ExceptionGlobalHandler {
         var apiResponse = new ApiResponse();
         apiResponse.setCode(errorCode.getCode());
         apiResponse.setMessage(errorCode.getMessage());
-        return ResponseEntity
-                .status(errorCode.getStatusCode())
-                .body(apiResponse);
+        return ResponseEntity.status(errorCode.getStatusCode()).body(apiResponse);
     }
 
-    private  String MapAttributes(String message, Map<String, Object> attributes){
+    private String MapAttributes(String message, Map<String, Object> attributes) {
         String minValue = String.valueOf(attributes.get(MIN_ATTRIBUTE));
         return message.replace("{" + MIN_ATTRIBUTE + "}", minValue);
     }
-
 }

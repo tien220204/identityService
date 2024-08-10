@@ -1,6 +1,5 @@
 package com.tien.identity.service.service;
 
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -9,11 +8,6 @@ import static org.mockito.Mockito.when;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import com.tien.identity.service.dto.request.UserCreationRequest;
-import com.tien.identity.service.dto.response.UserResponse;
-import com.tien.identity.service.entity.User;
-import com.tien.identity.service.exception.AppException;
-import com.tien.identity.service.repository.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +17,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 
+import com.tien.identity.service.dto.request.UserCreationRequest;
+import com.tien.identity.service.dto.response.UserResponse;
+import com.tien.identity.service.entity.User;
+import com.tien.identity.service.exception.AppException;
+import com.tien.identity.service.repository.UserRepository;
 
 @SpringBootTest
 @TestPropertySource("/test.properties")
@@ -94,14 +93,13 @@ public class UserServiceTest {
     }
 
     @Test
-    //authen cho test
+    // authen cho test
     @WithMockUser(username = "john")
-    void getMyInfo_valid_success(){
+    void getMyInfo_valid_success() {
         when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(user));
 
         var exception = assertThrows(AppException.class, () -> userService.getMyInfo());
 
         Assertions.assertThat(exception.getErrorCode()).isEqualTo(1005);
-
     }
 }

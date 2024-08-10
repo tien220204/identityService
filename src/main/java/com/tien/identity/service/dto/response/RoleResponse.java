@@ -1,9 +1,9 @@
 package com.tien.identity.service.dto.response;
 
+import java.util.Set;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -13,8 +13,7 @@ import java.util.Set;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RoleResponse {
 
-     String name;
-     String description;
-     Set<PermissionResponse> permissions;
-
+    String name;
+    String description;
+    Set<PermissionResponse> permissions;
 }

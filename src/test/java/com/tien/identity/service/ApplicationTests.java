@@ -1,14 +1,14 @@
 package com.tien.identity.service;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 import jakarta.xml.bind.DatatypeConverter;
+
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.autoconfigure.jackson.JacksonProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 @SpringBootTest
 @TestPropertySource("/test.properties")
@@ -24,17 +24,15 @@ class ApplicationTests {
         byte[] digest = md.digest();
         String mdHash = DatatypeConverter.printHexBinary(digest);
 
-        System.out.println("MD5 round 1: "+ mdHash);
+        System.out.println("MD5 round 1: " + mdHash);
 
         md.update(password.getBytes());
         digest = md.digest();
         mdHash = DatatypeConverter.printHexBinary(digest);
-        System.out.println("MD5 round 2: "+ mdHash);
+        System.out.println("MD5 round 2: " + mdHash);
 
-        BCryptPasswordEncoder  passwordEncoder = new BCryptPasswordEncoder(12);
-        System.out.println("Bcrypt round 1: "+ passwordEncoder.encode(password));
-        System.out.println("Bcrypt round 2: "+ passwordEncoder.encode(password));
-
-
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
+        System.out.println("Bcrypt round 1: " + passwordEncoder.encode(password));
+        System.out.println("Bcrypt round 2: " + passwordEncoder.encode(password));
     }
 }
