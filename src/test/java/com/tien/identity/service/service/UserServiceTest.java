@@ -98,8 +98,22 @@ public class UserServiceTest {
     void getMyInfo_valid_success() {
         when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(user));
 
+        var response = userService.getMyInfo();
+
+        Assertions.assertThat(response.getUsername()).isEqualTo("john");
+        Assertions.assertThat(response.getId()).isEqualTo("cf0600f538b3");
+    }
+
+
+
+    @Test
+    @WithMockUser(username = "john")
+    void getMyInfo_userNotFound_error() {
+        when(userRepository.findByUsername(anyString())).thenReturn(Optional.ofNullable(null));
+
+        // WHEN
         var exception = assertThrows(AppException.class, () -> userService.getMyInfo());
 
-        Assertions.assertThat(exception.getErrorCode()).isEqualTo(1005);
+        Assertions.assertThat(exception.getErrorCode().getCode()).isEqualTo(1005);
     }
 }
