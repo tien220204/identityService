@@ -3,6 +3,7 @@ package com.tien.identity.service.service;
 import java.util.HashSet;
 import java.util.List;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,17 +35,18 @@ public class UserService {
     PasswordEncoder passwordEncoder;
 
     public UserResponse createRequest(UserCreationRequest request) {
-        if (userRepository.existsByUsername(request.getUsername())) throw new AppException(ErrorCode.USER_EXISTED);
         var user = userMapper.toUser(request);
 
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        //        HashSet<Role> roles = new HashSet<>();
-        //        roleRepository.findById(PredefindedRole.USER_ROLE).ifPresent(roles::add);
-        //        user.setRoles(roles);
+        try{
+            user = userRepository.save(user);
+        }catch (DataIntegrityViolationException e){
+            throw new AppException(ErrorCode.USER_EXISTED);
+        }
 
-        return userMapper.toUserReponse(userRepository.save(user));
+        return userMapper.toUserReponse(user);
     }
 
     // lay info cua tai khoan dang dang nhap trong securityContextHolder

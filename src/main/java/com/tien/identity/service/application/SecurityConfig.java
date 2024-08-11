@@ -1,5 +1,6 @@
 package com.tien.identity.service.application;
 
+import org.springframework.web.filter.CorsFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -12,6 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 // optional boi vi da duoc enable khi security duoc khoi  dong
@@ -29,6 +32,24 @@ public class SecurityConfig {
     private static final String[] PUBLIC_ENDPOINTS = {
         "/users/createUser", "/users/getMyInfo", "/auth/**",
     };
+
+    //cors configuration
+    @Bean
+    public CorsFilter corsFilter(){
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+
+        //configure the origin,...
+        corsConfiguration.addAllowedOrigin("http://localhost...");
+        corsConfiguration.addAllowedMethod("*");
+        corsConfiguration.addAllowedHeader("*");
+
+        //apply for all endpoint
+        UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
+        urlBasedCorsConfigurationSource.registerCorsConfiguration("/**",corsConfiguration);
+
+
+        return new CorsFilter(urlBasedCorsConfigurationSource);
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
